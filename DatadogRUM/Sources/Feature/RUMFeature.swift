@@ -205,7 +205,7 @@ internal final class RUMFeature: DatadogRemoteFeature {
         )
         self.requestBuilder = RequestBuilder(
             customIntakeURL: configuration.customEndpoint,
-            eventsFilter: RUMViewEventsFilter(),
+            eventsFilter: RUMViewEventsFilter(telemetry: core.telemetry),
             telemetry: core.telemetry
         )
         var messageReceivers: [FeatureMessageReceiver] = [
