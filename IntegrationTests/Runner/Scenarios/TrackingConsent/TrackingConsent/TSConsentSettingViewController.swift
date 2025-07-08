@@ -6,6 +6,7 @@
 
 import UIKit
 import DatadogCore
+import DatadogRUM
 
 internal class TSConsentSettingViewController: UIViewController {
 
@@ -23,6 +24,9 @@ internal class TSConsentSettingViewController: UIViewController {
     }
 
     @IBAction func didChangeConsentValue(_ sender: Any) {
+        let rum = RUMMonitor.shared()
+        rum.addAction(type: .custom, name: "will change consent")
+
         switch consentValueControl.selectedSegmentIndex {
         case 0:
             Datadog.set(trackingConsent: .granted)
@@ -35,6 +39,8 @@ internal class TSConsentSettingViewController: UIViewController {
             homeViewController.currentConsentValue = .pending
         default: fatalError()
         }
+
+        rum.addAction(type: .custom, name: "did change consent")
     }
 
     @IBAction func didTapClose(_ sender: Any) {

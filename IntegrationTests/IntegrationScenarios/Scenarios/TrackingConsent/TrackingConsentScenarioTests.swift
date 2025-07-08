@@ -189,11 +189,13 @@ class TrackingConsentScenarioTests: IntegrationTests, LoggingCommonAsserts, Trac
             clearPersistentData: false // do not clear data from previous session
         )
 
+        try app.endRUMSession()
+
         // Because the app was restarted with consent `.granted`, we expect data
         // from this session to be send, but no RUM, Logging nor Tracing events from the first
         // session should be recorded.
         let recordedRUMRequests = try rumServerSession.pullRecordedRequests(timeout: dataDeliveryTimeout) { requests in
-            try RUMSessionMatcher.singleSession(from: requests)?.views.count == 2
+            try RUMSessionMatcher.singleSession(from: requests)?.hasEnded() ?? false
         }
 
         assertRUM(requests: recordedRUMRequests)
@@ -320,12 +322,21 @@ class TrackingConsentScenarioTests: IntegrationTests, LoggingCommonAsserts, Trac
             .flatMap { request in try RUMEventMatcher.fromNewlineSeparatedJSONObjectsData(request.httpBody) }
             .filterTelemetry()
             .filterApplicationLaunchView()
+            .excludeEventsWith(viewID: session.views[4].viewID) // exclude events from the view where the consent was actually changed
 
         try eventMatchers.forEach { event in
             XCTAssertEqual(
                 try event.attribute(forKeyPath: "usr.current-consent-value"),
                 expectedConsentValue.uppercased()
             )
+        }
+    }
+}
+
+extension Array where Element == RUMEventMatcher {
+    func excludeEventsWith(viewID: String) -> [RUMEventMatcher] {
+        return filter {
+            return (try? $0.attribute(forKeyPath: "view.id")) != viewID
         }
     }
 }
