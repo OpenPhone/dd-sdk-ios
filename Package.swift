@@ -15,15 +15,18 @@ import Foundation
 // the API and SDK packages (see https://github.com/open-telemetry/opentelemetry-swift/issues/486).
 let useOTelSwiftPackage = ProcessInfo.processInfo.environment["OTEL_SWIFT"] != nil
 
-let opentelemetry = useOTelSwiftPackage ?
-    (name: "opentelemetry-swift", url: "https://github.com/open-telemetry/opentelemetry-swift.git", version: Version("1.13.0")) :
-    (name: "opentelemetry-swift-packages", url: "https://github.com/DataDog/opentelemetry-swift-packages.git", version: Version("1.13.1"))
+//let opentelemetry = useOTelSwiftPackage ?
+//    (name: "opentelemetry-swift", url: "https://github.com/open-telemetry/opentelemetry-swift.git", version: Version("1.13.0")) :
+//    (name: "opentelemetry-swift-packages", url: "https://github.com/DataDog/opentelemetry-swift-packages.git", version: Version("1.13.1"))
+
+let opentelemetry = (name: "opentelemetry-swift", url: "https://github.com/open-telemetry/opentelemetry-swift.git", revision: "5bd5f04bc5c0ff7c3f58d3e3c2f6430f0829a05f")
 
 // `dd-sdk-ios` supports a broader range of platform versions than `OpenTelemetryApi`.
 // When compiled in `OTEL_SWIFT` mode, we need to adjust the supported platforms accordingly.
-let platforms: [SupportedPlatform] = useOTelSwiftPackage ?
-    [.iOS(.v13), .tvOS(.v13), .macOS(.v12), .watchOS(.v7)] :
-    [.iOS(.v12), .tvOS(.v12), .macOS(.v12), .watchOS(.v7)]
+//let platforms: [SupportedPlatform] = useOTelSwiftPackage ?
+//    [.iOS(.v13), .tvOS(.v13), .macOS(.v12), .watchOS(.v7)] :
+//    [.iOS(.v12), .tvOS(.v12), .macOS(.v12), .watchOS(.v7)]
+let platforms: [SupportedPlatform] = [.iOS(.v13), .tvOS(.v13), .macOS(.v12), .watchOS(.v7)]
 
 let internalSwiftSettings: [SwiftSetting] = ProcessInfo.processInfo.environment["DD_BENCHMARK"] != nil ?
     [.define("DD_BENCHMARK")] : []
@@ -67,7 +70,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/microsoft/plcrashreporter.git", from: "1.12.0"),
-        .package(url: opentelemetry.url, exact: opentelemetry.version),
+        .package(url: opentelemetry.url, revision: opentelemetry.revision),
     ],
     targets: [
         .target(

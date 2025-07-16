@@ -34,6 +34,7 @@ import OpenTelemetryApi
 ///     .startSpan()
 /// ```
 public class OTelTracerProvider: OpenTelemetryApi.TracerProvider {
+    
     private weak var core: DatadogCoreProtocol?
 
     /// Creates a tracer provider with the given Datadog SDK instance.
@@ -69,5 +70,9 @@ public class OTelTracerProvider: OpenTelemetryApi.TracerProvider {
             consolePrint("\(error)", .error)
             return DDNoopTracer()
         }
+    }
+
+    public func get(instrumentationName: String, instrumentationVersion: String?, schemaUrl: String?, attributes: [String : OpenTelemetryApi.AttributeValue]?) -> any OpenTelemetryApi.Tracer {
+        return get(instrumentationName: instrumentationName, instrumentationVersion: instrumentationVersion)
     }
 }
